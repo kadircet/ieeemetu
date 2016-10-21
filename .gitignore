@@ -1,2 +1,12 @@
+*.gz
+*.js
+*.php
+*.png
+*.aux
+*.zip
+*.log
+*.tex
+*.pdf
 *.dat
 *.json
+*.sql

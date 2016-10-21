@@ -66,7 +66,7 @@ try:
 	addMember('genelduyuru@ieee.metu.edu.tr', gId, True)
 	user = raw_input()
 	while True:
-		addMember(gId, user)
+		addMember(gId, user.strip())
 		user = raw_input()
 		i+=1
 		if i==1000:

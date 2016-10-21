@@ -10,36 +10,36 @@ from apiclient.http import BatchHttpRequest
 import json
 
 def Auth(setFile):
-	settings = json.load(open(setFile))
-	storage = Storage(settings['STORAGE_FILE'])
-	credentials = storage.get()
-	if credentials == None or credentials.invalid:
-		flow = OAuth2WebServerFlow(settings['CLIENT_ID'], settings['CLIENT_SECRET'], 
-				settings['OAUTH_SCOPE'], settings['REDIRECT_URI'])
-		credentials = run_flow(flow,storage,flags)
-	return credentials.authorize(http=httplib2.Http())
+    settings = json.load(open(setFile))
+    storage = Storage(settings['STORAGE_FILE'])
+    credentials = storage.get()
+    if credentials == None or credentials.invalid:
+        flow = OAuth2WebServerFlow(settings['CLIENT_ID'], settings['CLIENT_SECRET'], 
+                settings['OAUTH_SCOPE'], settings['REDIRECT_URI'])
+        credentials = run_flow(flow,storage,flags)
+    return credentials.authorize(http=httplib2.Http())
 
 def getMembersGroups(mId, domain='ieee.metu.edu.tr'):
-	groups = []
-	page_token = None
-	params = {'domain': domain, 'userKey': mId}
+    groups = []
+    page_token = None
+    params = {'domain': domain, 'userKey': mId}
 
-	while True:
-		try:
-			if page_token:
-				params['pageToken'] = page_token
-			current_page = directory_service.groups().list(**params).execute()
-		
-			if 'groups' in current_page:
-				groups.extend(current_page['groups'])
-			page_token = current_page.get('nextPageToken')
-			if not page_token:
-				break
-		except errors.HttpError as error:
-			print('An error occurred: %s' % error)
-			break
-	return groups
-	
+    while True:
+        try:
+            if page_token:
+                params['pageToken'] = page_token
+            current_page = directory_service.groups().list(**params).execute()
+        
+            if 'groups' in current_page:
+                groups.extend(current_page['groups'])
+            page_token = current_page.get('nextPageToken')
+            if not page_token:
+                break
+        except errors.HttpError as error:
+            print('An error occurred: %s' % error)
+            break
+    return groups
+    
 def deleteMemberFromGroup(mId, gId):
     try:
         params = {'groupKey': gId, 'memberKey': mId}
@@ -49,7 +49,7 @@ def deleteMemberFromGroup(mId, gId):
         print('An error occured: %s' % error._get_reason())
 
 def deleteMember(mId):
-    groups = getMembersGroups(mId)	
+    groups = getMembersGroups(mId)  
     if groups==[]:
         print("Member %s not found in any group" % mId)
         return False
