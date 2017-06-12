@@ -19,8 +19,8 @@ import mimetypes
 msgKGG="""Merhabalar Sayin %s,
 ODTÜ GÜÇ VE ENERJI KONGRESİ sertifikaniz ektedir, etkinligimize katiliminiz icin cok tesekkur ederiz.
 Eger fiziksel olarak da istiyorsaniz lutfen
-bu maile cevap olarak bu hafta cuma gunune kadar(yani en gec 16 Haziran 23.59'a kadar) belirtiniz.
-Cuma gununden itibaren Elektrik Elektronik A Blok'taki topluluk odamizdan alabilirsiniz."""
+bu maile cevap olarak bu hafta sali gunune kadar(yani en gec 17 Nisan 23.59'a kadar) belirtiniz.
+Sali gununden itibaren Elektrik Elektronik A Blok'taki topluluk odamizdan alabilirsiniz."""
 
 parser = argparse.ArgumentParser(parents=[argparser])
 flags = parser.parse_args()
@@ -62,38 +62,24 @@ def sendMail(to, msg, path):
 
     try:
         gmail_service.users().messages().send(**params).execute()
-    except errors.HttpError as e:
+    except Exception as e:
         print('An error occured: %s' % e)
 
 import requests
 import subprocess
 
-a="""AD,SOYAD,BÖLÜM,ÜNİVERSİTE,MAİL                                                                                                                                                                                      
-sarper,yaşar,,,                                                                                                                                                                                                        
-burak,tıraş, siyaset ve kamu yönetimi,odtü,buraktıras93@gmail.com                                                                                                                                                       
-arda,aslan,yazılım mühendisliği,odtü,ardaslan.91@gmail.com                                                                                                                                                             
-gencay ,altuntoprak,elektronik ve haberleşme mühendisliği,çankaya üni,gencayaltuntoprak@hotmail.com                                                                                                                    
-burkay,ünsal,ee,odtü,batuhanburkayaltın@gmail.com                                                                                                                                                                        
-bahar,bülbül,ee,odtü,bulbulbahar@gmail.com                                                                                                                                                                              
-emre ,bilici,bilgisayar,odtü,osmanemrebilici@gmail.com                                                                                                                                                                   
-yusuf ,maz,makina,odtü,yusufmaz61@gmail.com                                                                                                                                                                             
-alparslan,küçükköse,lise,,alparslan2311@gmail.com                                                                                                                                                                       
-mehmet barış,esin,ee,odtü,e187610@metu.edu.tr                                                                                                                                                                           
-ferhat selim,akçan,bilgisyar öğr,odtü,sayefe@yahoo.com                                                                                                                                                                        
-serhat emir,ogan,ee,odtü,seogan@hotmail.com
-Mustafa,Güler,ee,odtü,mustafaguler@hotmail.com"""
 def processUsers():
     global a
     r=a.split('\n')
     for user in r:
         data=user.split(',')
         print(data)
-        sed=subprocess.Popen(['/usr/bin/sed', 's/NAME/%s/g'%(data[0]+" "+data[1]).upper(), 'cert2.tex'], stdout=subprocess.PIPE)
+        sed=subprocess.Popen(['/usr/bin/sed', 's/NAME/%s/g'%(data[0]).upper(), 'cert2.tex'], stdout=subprocess.PIPE)
         sed.wait()
         subprocess.Popen(['/usr/bin/pdflatex'], stdin=sed.stdout, stdout=subprocess.PIPE, stderr=subprocess.PIPE).wait()
-        subprocess.Popen(['/usr/bin/mv', 'texput.pdf', 'phy/%s.pdf'%(data[0]+data[1])]).wait()
-        sendMail(data[4], msgKGG%(data[0]+" "+data[1]).upper(), 'phy/%s.pdf'%(data[0]+data[1]))
-        print("Send",data[0],data[4])
+        subprocess.Popen(['/usr/bin/mv', 'texput.pdf', 'phy/%s.pdf'%(data[0])]).wait()
+        sendMail(data[1], msgKGG%(data[0]).upper(), 'phy/%s.pdf'%(data[0]))
+        print("Send",data[0],data[1])
 
 gmail_service = None
 def main():

@@ -79,9 +79,11 @@ if groups==[]:
 for group in groups:
     if group['id'] in count:
         q=count[group['id']]
-    elif 'kgg16' in group['email']:
+    elif 'uye1617' in group['email']:
+#    else:
         q=getGroupMembers(group['id'])
-        print(q)
+        count[group['id']] = q
+        print("\n".join(q))
     else:
         continue
     members.extend(q)

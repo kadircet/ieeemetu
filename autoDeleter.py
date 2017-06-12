@@ -1,5 +1,5 @@
-#!/usr/bin/python
-# coding: utf8
+#!/usr/bin/python2
+# -*- coding: utf8 -*-
 import httplib2
 from apiclient import errors
 from apiclient.discovery import build
@@ -17,6 +17,7 @@ table = {
     'ş': 's', 'Ş': 'S', 'ı': 'i', 'İ': 'I', 'ç': 'c', 'Ç': 'C',
     'ü': 'u', 'Ü': 'U', 'ö': 'o', 'Ö': 'O', 'ğ': 'g', 'Ğ': 'G'
 }
+
 table = {ord(a):ord(b) for a,b in table.items()}
 
 msgSuccess = "Your mail address has been deleted from our mail list successfully."
@@ -106,6 +107,8 @@ def main():
         gmail_service = build('gmail', 'v1', http=Auth('settings.json'))
         for mail in getUsersMails(uId='me', query='is:unread'):
             headers = getMailHeaders(mail['id'])
+            if 'subject' not in headers:
+                continue
             if headers['subject'].lower().strip() in ('cikis', 'quit'):
                 processMail(mail['id'])
                 user = headers['from']

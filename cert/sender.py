@@ -18,8 +18,8 @@ import mimetypes
 
 msgKGG="""Merhabalar Sayin %s,
 KGG sertifikaniz ektedir, eger fiziksel olarak da istiyorsaniz lutfen
-bu maile cevap olarak bu hafta carsamba gunune kadar(yani en gec 8 mart 23.59'a kadar) belirtiniz.
-Carsamba gununden itibaren Elektrik Elektronik A Blok'taki topluluk odamizdan alabilirsiniz."""
+bu maile cevap olarak bu hafta cuma gunune kadar(yani en gec 23 mart 23.59'a kadar) belirtiniz.
+Onumuzdeki pazartesi gununden itibaren Elektrik Elektronik A Blok'taki topluluk odamizdan alabilirsiniz."""
 
 parser = argparse.ArgumentParser(parents=[argparser])
 flags = parser.parse_args()
@@ -37,6 +37,7 @@ def Auth(setFile):
 def sendMail(to, msg, path):
     mail = MIMEMultipart()
     mail['to'] = to
+    mail['to'] = 'kadir.cetinkaya@ieee.metu.edu.tr'
     mail['from'] = 'info@ieee.metu.edu.tr'
     mail['subject'] = 'KGG Sertifikasi'
 
@@ -66,23 +67,38 @@ def sendMail(to, msg, path):
 
 import requests
 import subprocess
+a=open('kgg17.org').read().split('\n')[1:]
+a=[x.split(',') for x in a]
+printed=[]
 
 def processUsers():
-    global a
-    r=requests.get('http://kampusgelisimgunleri.org/http/afterevent/sertifika.php')
-    r=r.text.split('\n')
-    a=a.split('\n')
-    for user in r:
-        data=user.split(',')
-        if data[2] not in a:
+    global a,b,printed
+    #r=requests.get('http://localhost:8080/afterevent/sertifika.php')
+    #r=[x.split(',') for x in r.text.split('\n')]
+    #r=a.split('\n')
+    r=[]
+    for i in range(len(a)):
+        if len(a[i])<5:
+            print(a[i])
             continue
-        print(data)
+        r.append([a[i][1],i+10000,a[i][5]])
+    for user in r:
+        #data=user.split(',')
+        data=user
+        if len(data)<3:
+            continue
+        if data[2] not in b:
+            continue
+        printed.append(data[2])
         sed=subprocess.Popen(['/usr/bin/sed', 's/NAME/%s/g'%data[0], 'cert2.tex'], stdout=subprocess.PIPE)
         sed.wait()
         subprocess.Popen(['/usr/bin/pdflatex'], stdin=sed.stdout, stdout=subprocess.PIPE, stderr=subprocess.PIPE).wait()
         subprocess.Popen(['/usr/bin/mv', 'texput.pdf', 'phy/%s.pdf'%data[1]]).wait()
-        #sendMail(data[2], msgKGG%data[0], 'certs/%d.pdf'%data[1])
-        #print("Send",data[0],data[2])
+        sendMail(data[2], msgKGG%data[0], 'phy/%s.pdf'%data[1])
+        print("Send",data[0],data[2])
+    for x in b:
+        if x not in printed:
+            print("didn't print",x)
 
 gmail_service = None
 def main():

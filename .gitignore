@@ -10,3 +10,5 @@
 *.dat
 *.json
 *.sql
+*.pyc
+*.org
